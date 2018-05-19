@@ -110,7 +110,7 @@ STRING * GetData(STRING * head,int i)
 	else return NULL;
 }
 void del(STRING * s,int start,int len){
-    int i;
+
     STRING* cur,*dur;
     
         if (start<=length(s)&&len>=0&&start+len<=length(s)) {
@@ -121,7 +121,7 @@ void del(STRING * s,int start,int len){
 			}
 			else 
 			{
-				cur=GetData(s,i-1);
+				cur=GetData(s,start-1);
 				dur=GetData(s,start+len-1);
 			}
 
