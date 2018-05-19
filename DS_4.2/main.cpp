@@ -1,7 +1,5 @@
 #include "stdlib.h"
-#include "stdio.h"
-#define STRINGMAX 81
-#define LEN sizeof(struct string)        //串的定义
+#include "stdio.h"    
 struct string{
     //int len;
     struct string* next;
@@ -25,6 +23,7 @@ STRING* creat(){
         if (p==NULL) {
             return NULL;
         }
+
         p->c=c;
         tail->next=p;
         tail=p;
@@ -45,31 +44,26 @@ int length(STRING* head)
     return j;
 }
 void concat(STRING* s,STRING* t){
-    int j;
-    STRING*cur=s;
-    if(length(s)+length(t)>(STRINGMAX-1))   //连接操作合法性验证
-        printf("too long!cannot concat!!");
     
-    else{
-        j=length(s);
-        while (cur->next!=NULL) {
+		STRING* cur=s;
+        while (cur->next!=NULL) 
+		{
             cur=cur->next;
         }
-        cur->next=t;     //将串t中字符序列放入串s的尾部
+        cur->next=t->next;     //将串t中字符序列放入串s的尾部
         free(t);
-    }
 }
 STRING *substr(STRING *s,int start,int len){
     int i;
     STRING *t,*tail,*p,*cur;
     t=(STRING *)malloc(sizeof(STRING));
-    if (start<0&&start>=length(s))       //取子串的合法性验证
+    if (start<0||start>=length(s)||len>length(s)-start)       //取子串的合法性验证
     {
         printf("截取不合法");
         return NULL;
     }
     else
-        if (len>=1&&len<=length(s)-start){
+        if (len>=1){
             cur=s;
             for (i=0; i<start; i++) {
                 cur=cur->next;
@@ -80,7 +74,7 @@ STRING *substr(STRING *s,int start,int len){
             t->next=NULL;
             tail=t;
             
-            for (i=1; i<len; i++) {
+            for (i=0; i<len; i++) {
                 p=(STRING*)malloc(sizeof(STRING));
                 if (p==NULL) {
                     return NULL;
@@ -97,28 +91,51 @@ STRING *substr(STRING *s,int start,int len){
         else
             return NULL;
 }
+STRING * GetData(STRING * head,int i)
+{
+	STRING* p;
+	int j=0;
+	if(i<=0)
+	{
+		return NULL;
+	}
+	p=head;
+	while(p->next!=NULL&&j<i)
+	{
+		p=p->next;
+		j++;
+	}
+	if(i==j)
+		return p;
+	else return NULL;
+}
 void del(STRING * s,int start,int len){
     int i;
-    STRING* p=s,*q=s;
-    while (s->next!=NULL) {
+    STRING* cur,*dur;
+    
         if (start<=length(s)&&len>=0&&start+len<=length(s)) {
-            for (i=1; i<start; i++) {
-                p=p->next;
-            }
-            for (i=0; i<start+len; i++) {
-                q=q->next;
-            }
-            p->next=q->next;
-            free(q);
+            if(start==1)
+			{	
+				cur=s;
+				dur=GetData(s,start+len-1);
+			}
+			else 
+			{
+				cur=GetData(s,i-1);
+				dur=GetData(s,start+len-1);
+			}
+
+            cur->next=dur->next;
+			free(dur);
+            
     }
         else printf("不能删除");
-}
-} void print(STRING* s){    //输出串的字符序列
+
+} 
+void print(STRING* s){    //输出串的字符序列
     int i;
     STRING *cur=s->next;
-    if (cur->next==NULL) {
-        printf("串为空");
-    }
+   
     while (cur->next!=NULL) {
         printf("%c",cur->c);
         cur=cur->next;
@@ -127,17 +144,17 @@ void del(STRING * s,int start,int len){
     printf("\n");
 }
 int main(){
-    STRING *head,*t,*v;                    //定义三个采用静态存储形式的串
+    STRING *head,*t,*v;                   
     int start,len;
-    //t=(STRING )malloc(LEN);          //为三个串分配相应的存储空间
-    // s=(STRING )malloc(LEN);
-    //v=(STRING )malloc(LEN);
+  
+
     printf("please input the string s: ");       //创建S串
     head=creat();
-    print(head);
+    //print(head);
     t=creat();
-    print(t);
+    //print(t);
     concat(head, t);
+	printf("the new string s: ");
     print(head);
     printf("plese input the start position(substr): ");    //输入截取子串的起始位置
     scanf("%d",&start);
@@ -146,20 +163,13 @@ int main(){
     v=substr(head,start,len);                   //截取子串
     printf("the substring: ");
     print(v);
-    
-    
-
-    /*printf("please input the string t: ");      //创建T串
-    concat(s,t);                          //连接并输出相应的串
-    printf("the new string s: ");
-    print(s);
-
-   
+	//printf("%d",length(head));
     printf("plese input the start position: ");    // 输入删除串的起始位置
     scanf("%d",&start);
     printf("please input the length(del): ");        //输入删除串的长度
     scanf("%d",&len);
-    del(s,start,len);     //删除串
+    del(head,start,len);     //删除串
     printf("the deleted string s: ");
-    print(s);*/
+    print(head);
+    
 }
